@@ -467,7 +467,6 @@ nohup java -jar server1.jar &
 ![dependency](https://raw.githubusercontent.com/liaokailin/pic-repo/master/zipkin-service-dependency.png)
 
 
-more about is [here](https://github.com/liaokailin/zipkin)
 
 
 # brave 源码
@@ -959,79 +958,7 @@ boolean submitEndAnnotation(String annotationName, SpanCollector spanCollector) 
 ```
 转换成字节流后调用`sendSpans`抽象方法发送`Span`信息，此时就回到一开始说的`HttpSpanCollector`通过`HttpURLConnection`实现的`sendSpans`方法。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+more about is [here](https://github.com/liaokailin/zipkin)
 
 
 
