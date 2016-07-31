@@ -470,4 +470,568 @@ nohup java -jar server1.jar &
 more about is [here](https://github.com/liaokailin/zipkin)
 
 
+# brave 源码
+
+以上完成了基本的操作，下面将从源码角度来看下`brave`的实现
+
+首先从`SpanCollector`来入手
+
+```java
+
+ @Bean
+    public SpanCollector spanCollector() {
+        HttpSpanCollector.Config config = HttpSpanCollector.Config.builder().connectTimeout(properties.getConnectTimeout()).readTimeout(properties.getReadTimeout())
+                .compressionEnabled(properties.isCompressionEnabled()).flushInterval(properties.getFlushInterval()).build();
+        return HttpSpanCollector.create(properties.getUrl(), config, new EmptySpanCollectorMetricsHandler());
+    }
+
+```
+
+从名称上看`HttpSpanCollector`是基于`http`的`span`收集器,因此超时配置是必须的，默认给出的超时时间较长，`flushInterval`表示`span`的传递
+间隔，实际为定时任务执行的间隔时间.在`HttpSpanCollector`中覆写了父类方法`sendSpans`
+
+```java
+
+@Override
+  protected void sendSpans(byte[] json) throws IOException {
+    // intentionally not closing the connection, so as to use keep-alives
+    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+    connection.setConnectTimeout(config.connectTimeout());
+    connection.setReadTimeout(config.readTimeout());
+    connection.setRequestMethod("POST");
+    connection.addRequestProperty("Content-Type", "application/json");
+    if (config.compressionEnabled()) {
+      connection.addRequestProperty("Content-Encoding", "gzip");
+      ByteArrayOutputStream gzipped = new ByteArrayOutputStream();
+      try (GZIPOutputStream compressor = new GZIPOutputStream(gzipped)) {
+        compressor.write(json);
+      }
+      json = gzipped.toByteArray();
+    }
+    connection.setDoOutput(true);
+    connection.setFixedLengthStreamingMode(json.length);
+    connection.getOutputStream().write(json);
+
+    try (InputStream in = connection.getInputStream()) {
+      while (in.read() != -1) ; // skip
+    } catch (IOException e) {
+      try (InputStream err = connection.getErrorStream()) {
+        if (err != null) { // possible, if the connection was dropped
+          while (err.read() != -1) ; // skip
+        }
+      }
+      throw e;
+    }
+  }
+}
+
+```
+
+可以看出最终`span`信息是通过`HttpURLConnection`实现的，同样道理就可以推理`brave`对`brave-spring-resttemplate-interceptors`模块的实现，
+只是换了一种`http`封装。
+
+
+`Brave`
+
+```java
+ @Bean
+    public Brave brave(SpanCollector spanCollector){
+        Brave.Builder builder = new Brave.Builder(properties.getServiceName());  //指定state
+        builder.spanCollector(spanCollector);
+        builder.traceSampler(Sampler.ALWAYS_SAMPLE);
+        Brave brave = builder.build();
+        return brave;
+    }
+
+```
+`Brave`类包装了各种工具类
+
+
+```java
+public Brave build() {
+            return new Brave(this);
+        }
+```
+创建一个`Brave`
+
+
+```java
+
+private Brave(Builder builder) {
+        serverTracer = ServerTracer.builder()
+                .randomGenerator(builder.random)
+                .spanCollector(builder.spanCollector)
+                .state(builder.state)
+                .traceSampler(builder.sampler).build();
+
+        clientTracer = ClientTracer.builder()
+                .randomGenerator(builder.random)
+                .spanCollector(builder.spanCollector)
+                .state(builder.state)
+                .traceSampler(builder.sampler).build();
+
+        localTracer = LocalTracer.builder()
+                .randomGenerator(builder.random)
+                .spanCollector(builder.spanCollector)
+                .spanAndEndpoint(SpanAndEndpoint.LocalSpanAndEndpoint.create(builder.state))
+                .traceSampler(builder.sampler).build();
+        
+        serverRequestInterceptor = new ServerRequestInterceptor(serverTracer);
+        serverResponseInterceptor = new ServerResponseInterceptor(serverTracer);
+        clientRequestInterceptor = new ClientRequestInterceptor(clientTracer);
+        clientResponseInterceptor = new ClientResponseInterceptor(clientTracer);
+        serverSpanAnnotationSubmitter = AnnotationSubmitter.create(SpanAndEndpoint.ServerSpanAndEndpoint.create(builder.state));
+        serverSpanThreadBinder = new ServerSpanThreadBinder(builder.state);
+        clientSpanThreadBinder = new ClientSpanThreadBinder(builder.state);
+    }
+
+```
+封装了`*Tracer`,`*Interceptor`,`*Binder`等
+
+其中 `serverTracer`当服务作为`服务端`时处理`span`信息，`clientTracer`当服务作为`客户端`时处理`span`信息
+
+
+`Filter`
+
+`BraveServletFilter`是`http`模块提供的拦截器功能，传递`serverRequestInterceptor`,`serverResponseInterceptor`,`spanNameProvider`等参数
+其中`spanNameProvider`表示如何处理`span`的名称，默认使用`method`名称,`spring boot`中申明的`filter bean` 默认拦截所有请求
+
+```java
+@Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+
+        String alreadyFilteredAttributeName = getAlreadyFilteredAttributeName();
+        boolean hasAlreadyFilteredAttribute = request.getAttribute(alreadyFilteredAttributeName) != null;
+
+        if (hasAlreadyFilteredAttribute) {
+            // Proceed without invoking this filter...
+            filterChain.doFilter(request, response);
+        } else {
+
+            final StatusExposingServletResponse statusExposingServletResponse = new StatusExposingServletResponse((HttpServletResponse) response);
+            requestInterceptor.handle(new HttpServerRequestAdapter(new ServletHttpServerRequest((HttpServletRequest) request), spanNameProvider));
+
+            try {
+                filterChain.doFilter(request, statusExposingServletResponse);
+            } finally {
+                responseInterceptor.handle(new HttpServerResponseAdapter(new HttpResponse() {
+                    @Override
+                    public int getHttpStatusCode() {
+                        return statusExposingServletResponse.getStatus();
+                    }
+                }));
+            }
+        }
+    }
+
+```
+
+首先来看`requestInterceptor.handle`方法，
+
+```java
+
+ public void handle(ServerRequestAdapter adapter) {
+        serverTracer.clearCurrentSpan();
+        final TraceData traceData = adapter.getTraceData();
+
+        Boolean sample = traceData.getSample();
+        if (sample != null && Boolean.FALSE.equals(sample)) {
+            serverTracer.setStateNoTracing();
+            LOGGER.fine("Received indication that we should NOT trace.");
+        } else {
+            if (traceData.getSpanId() != null) {
+                LOGGER.fine("Received span information as part of request.");
+                SpanId spanId = traceData.getSpanId();
+                serverTracer.setStateCurrentTrace(spanId.traceId, spanId.spanId,
+                        spanId.nullableParentId(), adapter.getSpanName());
+            } else {
+                LOGGER.fine("Received no span state.");
+                serverTracer.setStateUnknown(adapter.getSpanName());
+            }
+            serverTracer.setServerReceived();
+            for(KeyValueAnnotation annotation : adapter.requestAnnotations())
+            {
+                serverTracer.submitBinaryAnnotation(annotation.getKey(), annotation.getValue());
+            }
+        }
+    }
+
+```
+
+其中`serverTracer.clearCurrentSpan()`清除当前线程上的`span`信息，调用`ThreadLocalServerClientAndLocalSpanState`中的
+
+```java
+
+  @Override
+    public void setCurrentServerSpan(final ServerSpan span) {
+        if (span == null) {
+            currentServerSpan.remove();
+        } else {
+            currentServerSpan.set(span);
+        }
+    }
+```
+
+`currentServerSpan`为`ThreadLocal`对象
+
+```java
+private final static ThreadLocal<ServerSpan> currentServerSpan = new ThreadLocal<ServerSpan>() {
+```
+
+回到`ServerRequestInterceptor#handle()`方法中`final TraceData traceData = adapter.getTraceData()`
+
+
+```java
+ @Override
+    public TraceData getTraceData() {
+        final String sampled = serverRequest.getHttpHeaderValue(BraveHttpHeaders.Sampled.getName());
+        if (sampled != null) {
+            if (sampled.equals("0") || sampled.toLowerCase().equals("false")) {
+                return TraceData.builder().sample(false).build();
+            } else {
+                final String parentSpanId = serverRequest.getHttpHeaderValue(BraveHttpHeaders.ParentSpanId.getName());
+                final String traceId = serverRequest.getHttpHeaderValue(BraveHttpHeaders.TraceId.getName());
+                final String spanId = serverRequest.getHttpHeaderValue(BraveHttpHeaders.SpanId.getName());
+
+                if (traceId != null && spanId != null) {
+                    SpanId span = getSpanId(traceId, spanId, parentSpanId);
+                    return TraceData.builder().sample(true).spanId(span).build();
+                }
+            }
+        }
+        return TraceData.builder().build();
+    }
+```
+其中` SpanId span = getSpanId(traceId, spanId, parentSpanId)` 将构造一个`SpanId`对象
+
+```java
+ private SpanId getSpanId(String traceId, String spanId, String parentSpanId) {
+        return SpanId.builder()
+            .traceId(convertToLong(traceId))
+            .spanId(convertToLong(spanId))
+            .parentId(parentSpanId == null ? null : convertToLong(parentSpanId)).build();
+   }
+
+```
+
+将`traceId`,`spanId`,`parentId`关联起来，其中设置`parentId`方法为
+
+```java
+
+public Builder parentId(@Nullable Long parentId) {
+      if (parentId == null) {
+        this.flags |= FLAG_IS_ROOT;
+      } else {
+        this.flags &= ~FLAG_IS_ROOT;
+      }
+      this.parentId = parentId;
+      return this;
+    }
+```
+
+如果`parentId`为空为根节点，则执行`this.flags |= FLAG_IS_ROOT` ,因此后续在判断节点是否为根节点时，只需要执行`(flags & FLAG_IS_ROOT) == FLAG_IS_ROOT`即可.
+
+
+构造完`SpanId`后看
+
+```java
+    serverTracer.setStateCurrentTrace(spanId.traceId, spanId.spanId,
+                        spanId.nullableParentId(), adapter.getSpanName());
+```
+设置当前`Span`
+```java
+ public void setStateCurrentTrace(long traceId, long spanId, @Nullable Long parentSpanId, @Nullable String name) {
+        checkNotBlank(name, "Null or blank span name");
+        spanAndEndpoint().state().setCurrentServerSpan(
+            ServerSpan.create(traceId, spanId, parentSpanId, name));
+    }
+
+```
+
+`ServerSpan.create`创建`Span`信息
+
+```java
+
+ static ServerSpan create(long traceId, long spanId, @Nullable Long parentSpanId, String name) {
+        Span span = new Span();
+        span.setTrace_id(traceId);
+        span.setId(spanId);
+        if (parentSpanId != null) {
+            span.setParent_id(parentSpanId);
+        }
+        span.setName(name);
+        return create(span, true);
+    }
+```
+构造了一个包含`Span`信息的`AutoValue_ServerSpan`对象
+
+通过`setCurrentServerSpan`设置到当前线程上
+
+继续看`serverTracer.setServerReceived()`方法
+```java
+public void setServerReceived() {
+        submitStartAnnotation(zipkinCoreConstants.SERVER_RECV);
+    }
+```
+为当前请求设置了`server received event`
+
+```java
+
+void submitStartAnnotation(String annotationName) {
+        Span span = spanAndEndpoint().span();
+        if (span != null) {
+            Annotation annotation = Annotation.create(
+                currentTimeMicroseconds(),
+                annotationName,
+                spanAndEndpoint().endpoint()
+            );
+            synchronized (span) {
+                span.setTimestamp(annotation.timestamp);
+                span.addToAnnotations(annotation);
+            }
+        }
+    }
+```
+在这里为`Span`信息设置了`Annotation`信息,后续的
+
+```java
+ for(KeyValueAnnotation annotation : adapter.requestAnnotations())
+            {
+                serverTracer.submitBinaryAnnotation(annotation.getKey(), annotation.getValue());
+            }
+
+```
+设置了`BinaryAnnotation`信息，`adapter.requestAnnotations()`在构造`HttpServerRequestAdapter`时已完成
+```java
+ @Override
+    public Collection<KeyValueAnnotation> requestAnnotations() {
+        KeyValueAnnotation uriAnnotation = KeyValueAnnotation.create(
+                TraceKeys.HTTP_URL, serverRequest.getUri().toString());
+        return Collections.singleton(uriAnnotation);
+    }
+```
+
+以上将`Span`信息(包括sr)存储在当前线程中，接下来继续看`BraveServletFilter#doFilter`方法的`finally`部分
+
+```java
+
+ responseInterceptor.handle(new HttpServerResponseAdapter(new HttpResponse() {
+                    @Override  //获取http状态码
+                    public int getHttpStatusCode() {
+                        return statusExposingServletResponse.getStatus();
+                    }
+                }));
+```
+
+`handle`方法
+
+
+```java
+ public void handle(ServerResponseAdapter adapter) {
+        // We can submit this in any case. When server state is not set or
+        // we should not trace this request nothing will happen.
+        LOGGER.fine("Sending server send.");
+        try {
+            for(KeyValueAnnotation annotation : adapter.responseAnnotations())
+            {
+                serverTracer.submitBinaryAnnotation(annotation.getKey(), annotation.getValue());
+            }
+            serverTracer.setServerSend();
+        } finally {
+            serverTracer.clearCurrentSpan();
+        }
+    }
+
+```
+首先配置`BinaryAnnotation`信息，然后执行`serverTracer.setServerSend`,在`finally`中清除当前线程中的`Span`信息(不管前面是否清楚成功,最终都将执行该不走)，`ThreadLocal`中的数据要做到有始有终
+
+看`serverTracer.setServerSend()`
+
+```java
+public void setServerSend() {
+        if (submitEndAnnotation(zipkinCoreConstants.SERVER_SEND, spanCollector())) {
+            spanAndEndpoint().state().setCurrentServerSpan(null);
+        }
+    }
+
+```
+终于看到`spanCollector`收集器了，说明下面将看是收集`Span`信息,这里为`ss`注解
+
+
+```java
+
+boolean submitEndAnnotation(String annotationName, SpanCollector spanCollector) {
+        Span span = spanAndEndpoint().span();
+        if (span == null) {
+          return false;
+        }
+        Annotation annotation = Annotation.create(
+            currentTimeMicroseconds(),
+            annotationName,
+            spanAndEndpoint().endpoint()
+        );
+        span.addToAnnotations(annotation);
+        if (span.getTimestamp() != null) {
+            span.setDuration(annotation.timestamp - span.getTimestamp());
+        }
+        spanCollector.collect(span);
+        return true;
+    }
+```
+
+首先获取当前线程中的`Span`信息，然后处理注解信息，通过`annotation.timestamp - span.getTimestamp()`计算延迟,
+调用`spanCollector.collect(span)`进行收集`Span`信息，那么`Span`信息是同步收集的吗？肯定不是的，接着看
+
+![zipkin-span-collect-inherit](https://raw.githubusercontent.com/liaokailin/pic-repo/master/zipkin-span-collect-inherit.png)
+
+调用`spanCollector.collect(span)`则执行`FlushingSpanCollector`中的`collect`方法
+
+```java
+
+@Override
+  public void collect(Span span) {
+    metrics.incrementAcceptedSpans(1);
+    if (!pending.offer(span)) {
+      metrics.incrementDroppedSpans(1);
+    }
+  }
+```
+
+首先进行的是`metrics`统计信息，可以自定义该`SpanCollectorMetricsHandler`信息收集各指标信息,利用如`grafana`等展示信息
+
+`pending.offer(span)`将`span`信息存储在`BlockingQueue`中，然后通过定时任务去取出阻塞队列中的值，偷偷摸摸的上传`span`信息
+
+定时任务利用了`Flusher`类来执行，在构造`FlushingSpanCollector`时构造了`Flusher`类
+
+```java
+
+ static final class Flusher implements Runnable {
+    final Flushable flushable;
+    final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    Flusher(Flushable flushable, int flushInterval) {
+      this.flushable = flushable;
+      this.scheduler.scheduleWithFixedDelay(this, 0, flushInterval, SECONDS);
+    }
+
+    @Override
+    public void run() {
+      try {
+        flushable.flush();
+      } catch (IOException ignored) {
+      }
+    }
+  }
+```
+
+创建了一个核心线程数为1的线程池，每间隔`flushInterval`秒执行一次`Span`信息上传，执行`flush`方法
+
+
+```java
+@Override
+  public void flush() {
+    if (pending.isEmpty()) return;
+    List<Span> drained = new ArrayList<Span>(pending.size());
+    pending.drainTo(drained);
+    if (drained.isEmpty()) return;
+
+    int spanCount = drained.size();
+    try {
+      reportSpans(drained);
+    } catch (IOException e) {
+      metrics.incrementDroppedSpans(spanCount);
+    } catch (RuntimeException e) {
+      metrics.incrementDroppedSpans(spanCount);
+    }
+  }
+
+```
+
+首先将阻塞队列中的值全部取出存如集合中，最后调用`reportSpans(List<Span> drained)`抽象方法，该方法在`AbstractSpanCollector`得到覆写
+
+```java
+@Override
+  protected void reportSpans(List<Span> drained) throws IOException {
+    byte[] encoded = codec.writeSpans(drained);
+    sendSpans(encoded);
+  }
+
+```
+转换成字节流后调用`sendSpans`抽象方法发送`Span`信息，此时就回到一开始说的`HttpSpanCollector`通过`HttpURLConnection`实现的`sendSpans`方法。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
