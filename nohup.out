@@ -1,0 +1,123 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.3.6.RELEASE)
+
+2016-07-30 23:22:54.148  INFO 3100 --- [           main] com.lkl.zipkin.Application               : Starting Application v1.3.6.RELEASE on mac with PID 3100 (/Users/liaokailin/git/zipkin/src/main/resources/service-jar/server4.jar started by liaokailin in /Users/liaokailin/git/zipkin)
+2016-07-30 23:22:54.152  INFO 3100 --- [           main] com.lkl.zipkin.Application               : No active profile set, falling back to default profiles: default
+2016-07-30 23:22:54.244  INFO 3100 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3ab62081: startup date [Sat Jul 30 23:22:54 CST 2016]; root of context hierarchy
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.3.6.RELEASE)
+
+2016-07-30 23:23:15.561  INFO 3108 --- [           main] com.lkl.zipkin.Application               : Starting Application v1.3.6.RELEASE on mac with PID 3108 (/Users/liaokailin/git/zipkin/src/main/resources/service-jar/server4.jar started by liaokailin in /Users/liaokailin/git/zipkin)
+2016-07-30 23:23:15.569  INFO 3108 --- [           main] com.lkl.zipkin.Application               : No active profile set, falling back to default profiles: default
+2016-07-30 23:23:15.666  INFO 3108 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2a90b93b: startup date [Sat Jul 30 23:23:15 CST 2016]; root of context hierarchy
+2016-07-30 23:23:18.315  INFO 3108 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 9092 (http)
+2016-07-30 23:23:18.351  INFO 3108 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2016-07-30 23:23:18.356  INFO 3108 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.0.36
+2016-07-30 23:23:18.610  INFO 3108 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2016-07-30 23:23:18.610  INFO 3108 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2948 ms
+2016-07-30 23:23:19.577  INFO 3108 --- [ost-startStop-1] o.s.b.c.e.ServletRegistrationBean        : Mapping servlet: 'dispatcherServlet' to [/]
+2016-07-30 23:23:19.582  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'metricFilter' to: [/*]
+2016-07-30 23:23:19.582  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'characterEncodingFilter' to: [/*]
+2016-07-30 23:23:19.582  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2016-07-30 23:23:19.582  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2016-07-30 23:23:19.583  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'requestContextFilter' to: [/*]
+2016-07-30 23:23:19.583  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'webRequestLoggingFilter' to: [/*]
+2016-07-30 23:23:19.583  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'braveServletFilter' to: [/*]
+2016-07-30 23:23:19.583  INFO 3108 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'applicationContextIdFilter' to: [/*]
+2016-07-30 23:23:20.071  INFO 3108 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2a90b93b: startup date [Sat Jul 30 23:23:15 CST 2016]; root of context hierarchy
+2016-07-30 23:23:20.183  INFO 3108 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/start]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.start() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:23:20.184  INFO 3108 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/tar]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.tar() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:23:20.184  INFO 3108 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/foo]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.foo() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:23:20.185  INFO 3108 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/bar]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.bar() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:23:20.187  INFO 3108 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2016-07-30 23:23:20.188  INFO 3108 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2016-07-30 23:23:20.268  INFO 3108 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-07-30 23:23:20.269  INFO 3108 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-07-30 23:23:20.338  INFO 3108 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-07-30 23:23:21.408  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/health || /health.json],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint.invoke(java.security.Principal)
+2016-07-30 23:23:21.409  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/beans || /beans.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.415  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/dump || /dump.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.417  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/env/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint.value(java.lang.String)
+2016-07-30 23:23:21.417  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/env || /env.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.418  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/mappings || /mappings.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.419  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/info || /info.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.420  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint.value(java.lang.String)
+2016-07-30 23:23:21.421  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics || /metrics.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.422  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/configprops || /configprops.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.423  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/trace || /trace.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:21.424  INFO 3108 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/autoconfig || /autoconfig.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:23:22.003  INFO 3108 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2016-07-30 23:23:22.017  INFO 3108 --- [           main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+2016-07-30 23:23:22.263  INFO 3108 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 9092 (http)
+2016-07-30 23:23:22.270  INFO 3108 --- [           main] com.lkl.zipkin.Application               : Started Application in 7.261 seconds (JVM running for 7.762)
+2016-07-30 23:23:33.544  INFO 3108 --- [nio-9092-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2016-07-30 23:23:33.544  INFO 3108 --- [nio-9092-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2016-07-30 23:23:33.562  INFO 3108 --- [nio-9092-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 18 ms
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.3.6.RELEASE)
+
+2016-07-30 23:23:57.636  INFO 3136 --- [           main] com.lkl.zipkin.Application               : Starting Application v1.3.6.RELEASE on mac with PID 3136 (/Users/liaokailin/git/zipkin/src/main/resources/service-jar/server3.jar started by liaokailin in /Users/liaokailin/git/zipkin)
+2016-07-30 23:23:57.641  INFO 3136 --- [           main] com.lkl.zipkin.Application               : No active profile set, falling back to default profiles: default
+2016-07-30 23:23:57.739  INFO 3136 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@57ee667c: startup date [Sat Jul 30 23:23:57 CST 2016]; root of context hierarchy
+2016-07-30 23:24:00.294  INFO 3136 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 9091 (http)
+2016-07-30 23:24:00.329  INFO 3136 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2016-07-30 23:24:00.336  INFO 3136 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.0.36
+2016-07-30 23:24:00.575  INFO 3136 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2016-07-30 23:24:00.575  INFO 3136 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2839 ms
+2016-07-30 23:24:02.503  INFO 3136 --- [ost-startStop-1] o.s.b.c.e.ServletRegistrationBean        : Mapping servlet: 'dispatcherServlet' to [/]
+2016-07-30 23:24:02.547  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'metricFilter' to: [/*]
+2016-07-30 23:24:02.547  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'characterEncodingFilter' to: [/*]
+2016-07-30 23:24:02.548  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2016-07-30 23:24:02.548  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2016-07-30 23:24:02.549  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'requestContextFilter' to: [/*]
+2016-07-30 23:24:02.549  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'webRequestLoggingFilter' to: [/*]
+2016-07-30 23:24:02.549  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'braveServletFilter' to: [/*]
+2016-07-30 23:24:02.549  INFO 3136 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'applicationContextIdFilter' to: [/*]
+2016-07-30 23:24:02.881  INFO 3136 --- [ost-startStop-1] o.a.c.util.SessionIdGeneratorBase        : Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [214] milliseconds.
+2016-07-30 23:24:03.528  INFO 3136 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@57ee667c: startup date [Sat Jul 30 23:23:57 CST 2016]; root of context hierarchy
+2016-07-30 23:24:03.736  INFO 3136 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/start]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.start() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:24:03.738  INFO 3136 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/foo]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.foo() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:24:03.738  INFO 3136 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/bar]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.bar() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:24:03.738  INFO 3136 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/tar]}" onto public java.lang.String com.lkl.zipkin.controller.HomeController.tar() throws java.lang.InterruptedException,java.io.IOException
+2016-07-30 23:24:03.754  INFO 3136 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2016-07-30 23:24:03.754  INFO 3136 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2016-07-30 23:24:03.864  INFO 3136 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-07-30 23:24:03.864  INFO 3136 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-07-30 23:24:03.964  INFO 3136 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-07-30 23:24:04.898  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/trace || /trace.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.901  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/configprops || /configprops.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.902  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/dump || /dump.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.903  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/mappings || /mappings.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.904  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/info || /info.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.908  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/env/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint.value(java.lang.String)
+2016-07-30 23:24:04.908  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/env || /env.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.910  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/health || /health.json],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint.invoke(java.security.Principal)
+2016-07-30 23:24:04.911  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/autoconfig || /autoconfig.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.912  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/beans || /beans.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:04.915  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint.value(java.lang.String)
+2016-07-30 23:24:04.915  INFO 3136 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics || /metrics.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-07-30 23:24:05.498  INFO 3136 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2016-07-30 23:24:05.514  INFO 3136 --- [           main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+2016-07-30 23:24:05.890  INFO 3136 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 9091 (http)
+2016-07-30 23:24:05.898  INFO 3136 --- [           main] com.lkl.zipkin.Application               : Started Application in 8.822 seconds (JVM running for 9.311)
+2016-07-30 23:24:17.319  INFO 3136 --- [nio-9091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2016-07-30 23:24:17.319  INFO 3136 --- [nio-9091-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2016-07-30 23:24:17.338  INFO 3136 --- [nio-9091-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 19 ms
