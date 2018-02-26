@@ -24,44 +24,62 @@ public class HomeController {
 
     private  Random random = new Random();
 
-    @RequestMapping("start")
-    public String start() throws InterruptedException, IOException {
+    @RequestMapping("/")
+    public String home() throws InterruptedException, IOException {
         int sleep= random.nextInt(100);
         TimeUnit.MILLISECONDS.sleep(sleep);
-        Request request = new Request.Builder().url("http://localhost:9090/foo").get().build();
+        return "<br>[home sleep " + sleep +" ms]" +
+            "<br><br><a href='/service1'>service1</a>" +
+            "<br><br><a href='/service2'>service2</a><br>-> service1" +
+            "<br><br><a href='/service3'>service3</a><br>-> service2 -> service1" +
+            "<br><br><a href='/service4'>service4</a><br>-> service3 -> service2 -> service1" +
+            "<br><br><a href='/service5'>service5</a><br>-> service3 -> service2 -> service1<br>-> service2 -> service1";
+    }
+
+    @RequestMapping("service1")
+    public String service1() throws InterruptedException, IOException {
+        int sleep= random.nextInt(100);
+        TimeUnit.MILLISECONDS.sleep(sleep);
+        return "<br><a href='/'>Home</a>[service1 sleep " + sleep +" ms]";
+    }
+
+    @RequestMapping("service2")
+    public String service2() throws InterruptedException, IOException {
+        String resp = httpGet("http://localhost:9091/service1");
+        int sleep= random.nextInt(100);
+        TimeUnit.MILLISECONDS.sleep(sleep);
+        return "<br><a href='/'>Home</a>[service2 sleep " + sleep +" ms]" + resp;
+    }
+
+    @RequestMapping("service3")
+    public String service3() throws InterruptedException, IOException {
+        String resp = httpGet("http://localhost:9092/service2");
+        int sleep= random.nextInt(100);
+        TimeUnit.MILLISECONDS.sleep(sleep);
+        return "<br><a href='/'>Home</a>[service3 sleep " + sleep +" ms]" + resp;
+    }
+
+    @RequestMapping("service4")
+    public String service4() throws InterruptedException, IOException {
+        String resp = httpGet("http://localhost:9093/service3");
+        int sleep= random.nextInt(100);
+        TimeUnit.MILLISECONDS.sleep(sleep);
+        return "<br><a href='/'>Home</a>[service4 sleep " + sleep+" ms]" + resp;
+    }
+
+    @RequestMapping("service5")
+    public String service5() throws InterruptedException, IOException {
+        String resp = httpGet("http://localhost:9093/service3");
+        resp += httpGet("http://localhost:9093/service2");
+        int sleep= random.nextInt(100);
+        TimeUnit.MILLISECONDS.sleep(sleep);
+        return "<br><a href='/'>Home</a>[service5 sleep " + sleep+" ms]" + resp;
+    }
+
+    public String httpGet(String url) throws InterruptedException, IOException {
+        Request request = new Request.Builder().url(url).get().build();
         Response response = client.newCall(request).execute();
-        return " [service1 sleep " + sleep+" ms]" + response.body().toString();
+        return response.body().string();
     }
-
-
-    @RequestMapping("foo")
-    public String foo() throws InterruptedException, IOException {
-        int sleep= random.nextInt(100);
-        TimeUnit.MILLISECONDS.sleep(sleep);
-        Request request = new Request.Builder().url("http://localhost:9091/bar").get().build();  //service3
-        Response response = client.newCall(request).execute();
-        String result = response.body().string();
-        request = new Request.Builder().url("http://localhost:9092/tar").get().build();  //service4
-        response = client.newCall(request).execute();
-        result += response.body().string();
-        return " [service2 sleep " + sleep+" ms]" + result;
-    }
-
-
-    @RequestMapping("bar")
-    public String bar() throws InterruptedException, IOException {  //service3 method
-        int sleep= random.nextInt(100);
-        TimeUnit.MILLISECONDS.sleep(sleep);
-        return " [service3 sleep " + sleep+" ms]";
-    }
-
-    @RequestMapping("tar")
-    public String tar() throws InterruptedException, IOException { //service4 method
-        int sleep= random.nextInt(100);
-        TimeUnit.MILLISECONDS.sleep(sleep);
-        return " [service4 sleep " + sleep+" ms]";
-    }
-
-
 
 }

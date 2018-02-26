@@ -22,14 +22,12 @@ public class ZipkinConfig {
     @Autowired
     private ZipkinProperties properties;
 
-
     @Bean
     public SpanCollector spanCollector() {
         HttpSpanCollector.Config config = HttpSpanCollector.Config.builder().connectTimeout(properties.getConnectTimeout()).readTimeout(properties.getReadTimeout())
                 .compressionEnabled(properties.isCompressionEnabled()).flushInterval(properties.getFlushInterval()).build();
         return HttpSpanCollector.create(properties.getUrl(), config, new EmptySpanCollectorMetricsHandler());
     }
-
 
     @Bean
     public Brave brave(SpanCollector spanCollector){
@@ -42,7 +40,7 @@ public class ZipkinConfig {
 
     @Bean
     public BraveServletFilter braveServletFilter(Brave brave){
-        BraveServletFilter filter = new BraveServletFilter(brave.serverRequestInterceptor(),brave.serverResponseInterceptor(),new DefaultSpanNameProvider());
+        BraveServletFilter filter = new BraveServletFilter(brave.serverRequestInterceptor(),brave.serverResponseInterceptor(), new DefaultSpanNameProvider());
         return filter;
     }
 

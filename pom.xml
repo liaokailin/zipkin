@@ -90,7 +90,7 @@
 
     <!-- Package as an executable jar -->
     <build>
-        <finalName>server1</finalName>
+        <finalName>service</finalName>
 
         <plugins>
             <plugin>
